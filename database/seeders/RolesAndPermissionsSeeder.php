@@ -69,23 +69,23 @@ class RolesAndPermissionsSeeder extends Seeder
 
         $superAdmin = 'super-admin';
         $systemAdmin = 'system-admin';
-        $storeOwner = 'store-owner';
-        $storeAdmin = 'store-admin';
+        $storeOwner = 'upt-owner';
+        $storeAdmin = 'upt-admin';
         $customer = 'customer';
 
         Role::create(['name' => $superAdmin])->givePermissionTo(Permission::all());
 
-        Role::create(['name' => $systemAdmin])->givePermissionTo([
-            $addUser,
-            $editUser,
-            $deleteUser,
-            $approveStore,
-            $suspendStore,
-            $addStore,
-            $editStore,
-            $deleteStore
+        // Role::create(['name' => $systemAdmin])->givePermissionTo([
+        //     $addUser,
+        //     $editUser,
+        //     $deleteUser,
+        //     $approveStore,
+        //     $suspendStore,
+        //     $addStore,
+        //     $editStore,
+        //     $deleteStore
 
-        ]);
+        // ]);
 
         Role::create(['name' => $storeOwner])->givePermissionTo([
             $addStore,
@@ -113,8 +113,8 @@ class RolesAndPermissionsSeeder extends Seeder
             $deleteProduct,
         ]);
 
-        Role::create(['name' => $customer])->givePermissionTo([
-            $viewProduct
-        ]);
+        // Role::create(['name' => $customer])->givePermissionTo([
+        //     $viewProduct
+        // ]);
     }
 }

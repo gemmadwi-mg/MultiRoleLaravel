@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\ParentLand;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -10,23 +11,22 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use UserTransformer;
 
-class AdminUserController extends Controller
+class AdminParentLandController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index($ownerId)
     {
-        if (!$users = User::with('roles')->get()) {
-            throw new NotFoundHttpException('Users not found');
+        $brands = ParentLand::where('owner_id', $ownerId)->get();
+
+        if (empty($brands)) {
+            throw new NotFoundHttpException('ParentLand does not exist');
         }
 
-        return $users;
-        // return $this->response
-        //             ->collection($users, new UserTransformer)
-        //             ->setStatusCode(200);
+        return $brands;
     }
 
     /**
@@ -35,37 +35,44 @@ class AdminUserController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request, $userId)
     {
         $validator = Validator::make($request->all(), [
-            'email' => 'required|email|unique:users,email|max:30',
-            'name' => 'required|string|min:3|max:30',
+            'certificate_number' => 'required|integer',
+            'certificate_date' => 'required',
+            'item_name' => 'required',
+            'address' => 'required',
+            'large' => 'required',
+            'asset_value' => 'required'
         ]);
 
         if ($validator->fails()) {
             return response()->json([
-                'validation errors' => $validator->errors()
+                'validation_errors' => $validator->errors()
             ]);
         }
 
         try {
-            $user = User::firstOrCreate(['email' => $request->email], [
-                'name' => $request->name,
-                'email' => $request->email,
-                'password' => 'Test@123'
-            ]);
-
-            // $user->assignRole('customer');
+            $parent_land = User::find($userId)->users()
+                ->create([
+                    'owner_id' => $request->owner_id,
+                    'certificate_number' => $request->certificate_number,
+                    'certificate_date' => $request->certificate_date,
+                    'item_name' => $request->item_name,
+                    'address' => $request->address,
+                    'large' => $request->large,
+                    'asset_value' => $request->asset_value,
+                ]);
         } catch (HttpException $th) {
             throw $th;
         }
 
         $response = [
-            'message' => 'User created successfully',
-            'id' => $user->id
+            'message' => 'ParentLand created successfully',
+            'id' => $parent_land->id
         ];
 
-        return response()->json($response)->setStatusCode(201);
+        return response()->json($response, 200);
     }
 
     /**
@@ -157,41 +164,4 @@ class AdminUserController extends Controller
         return response()->json(['message' => 'User deleted successfully', 'id' => $id]);
     }
 
-    public function suspend($id)
-    {
-        if (!$user = User::find($id)) {
-            throw new NotFoundHttpException('User not found');
-        }
-
-        try {
-            $user->userProfile->createOrUpdate(['user_id', $id], [
-                'active' => false
-            ]);
-        } catch (HttpException $th) {
-            throw $th;
-        }
-
-        $response = ['message' => 'User suspended successfully', 'id' => $id];
-
-        return response()->json($response, 200);
-    }
-
-    public function activate($id)
-    {
-        if (!$user = User::find($id)) {
-            throw new NotFoundHttpException('User not found');
-        }
-
-        try {
-            $user->userProfile->createOrUpdate(['user_id', $id], [
-                'active' => true
-            ]);
-        } catch (HttpException $th) {
-            throw $th;
-        }
-
-        $response = ['message' => 'User suspended successfully', 'id' => $id];
-
-        return response()->json($response, 200);
-    }
 }

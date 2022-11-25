@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateBrandStoreTable extends Migration
+class CreateParentAdminsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,14 @@ class CreateBrandStoreTable extends Migration
      */
     public function up()
     {
-        Schema::create('brand_store', function (Blueprint $table) {
+        Schema::create('parent_land_admins', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('store_id')
-                ->constrained('stores')
+            $table->foreignId('user_id')
+                ->constrained('users')
                 ->cascadeOnUpdate()
                 ->restrictOnDelete();
-            $table->foreignId('brand_id')
-                ->constrained('brands')
+            $table->foreignId('parent_land_id')
+                ->constrained('parent_lands')
                 ->cascadeOnUpdate()
                 ->restrictOnDelete();
             $table->timestamps();
@@ -34,6 +34,6 @@ class CreateBrandStoreTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('brand_store');
+        Schema::dropIfExists('parent_land_admins');
     }
 }

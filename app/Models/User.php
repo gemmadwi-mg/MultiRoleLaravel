@@ -61,13 +61,13 @@ class User extends Authenticatable implements JWTSubject
         }
     }
 
-    public function userProfile()
+    public function parentLands()
     {
-        return $this->hasOne(UserProfile::class);
+        return $this->hasMany(ParentLand::class, 'owner_id');
     }
 
-    public function stores()
+    public function users()
     {
-        return $this->hasMany(Store::class, 'owner_id');
+        return $this->belongsToMany(ParentLand::class, 'parent_land_admins');
     }
 }

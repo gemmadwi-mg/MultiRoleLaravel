@@ -1,9 +1,12 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminParentLandController;
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\BrandController;
+use App\Http\Controllers\ParentLandController;
 use App\Http\Controllers\ProductLineController;
 use App\Http\Controllers\StoreController;
+use App\Models\ParentLand;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -44,31 +47,27 @@ $api->version('v1', function ($api) {
         });
     });
 
-    $api->group(['prefix' => 'me', 'middleware' => 'jwt.auth'], function ($api) {
-        $api->get('/profile', 'App\Http\Controllers\UserProfileController@index');
-        $api->post('/profile', 'App\Http\Controllers\UserProfileController@store');
-        $api->put('/profile', 'App\Http\Controllers\UserProfileController@update');
-        $api->delete('/profile', 'App\Http\Controllers\UserProfileController@delete');
-    });
-
     $api->group(['middleware' => ['role:super-admin'], 'prefix' => 'admin'], function ($api) {
         $api->resource('users', AdminUserController::class);
-        $api->post('users/{id}/suspend', 'App\Http\Controllers\Admin\AdminUserController@suspend');
-        $api->post('users/{id}/activate', 'App\Http\Controllers\Admin\AdminUserController@activate');
-        $api->get('users/{id}/roles', 'App\Http\Controllers\Admin\AdminRolesController@show');
-        $api->get('users/{id}/permissions', 'App\Http\Controllers\Admin\AdminPermissionsController@show');
-        $api->post('users/{id}/roles', 'App\Http\Controllers\Admin\AdminRolesController@changeRole');
-        $api->post('products/categories', 'App\Http\Controllers\CategoryController@store');
-        $api->put('products/categories/{id}', 'App\Http\Controllers\CategoryController@update');
-        $api->delete('products/categories/{id}', 'App\Http\Controllers\CategoryController@destroy');
+        $api->get('users/{id}/parentlands', 'App\Http\Controllers\Admin\AdminParentLandController@index');
+        $api->post('users/{id}/parentlands', 'App\Http\Controllers\Admin\AdminParentLandController@store');
+        // $api->resource('users/{user}/parentlands', AdminParentLandController::class);
+        // $api->post('users/{id}/suspend', 'App\Http\Controllers\Admin\AdminUserController@suspend');
+        // $api->post('users/{id}/activate', 'App\Http\Controllers\Admin\AdminUserController@activate');
+        // $api->get('users/{id}/roles', 'App\Http\Controllers\Admin\AdminRolesController@show');
+        // $api->get('users/{id}/permissions', 'App\Http\Controllers\Admin\AdminPermissionsController@show');
+        // $api->post('users/{id}/roles', 'App\Http\Controllers\Admin\AdminRolesController@changeRole');
+        // $api->post('products/categories', 'App\Http\Controllers\CategoryController@store');
+        // $api->put('products/categories/{id}', 'App\Http\Controllers\CategoryController@update');
+        // $api->delete('products/categories/{id}', 'App\Http\Controllers\CategoryController@destroy');
     });
 
-    $api->group(['middleware' => ['role:store-owner'], 'prefix' => 'owner'], function ($api) {
-        $api->post('stores', 'App\Http\Controllers\StoreController@store');
-        $api->group(['middleware' => 'isStoreOwner'], function ($api) {
-            $api->resource('stores', StoreController::class, ['except' => ['store']]);
-            $api->resource('stores/{store}/brands', BrandController::class);
-            $api->resource('stores/{store}/brands/{brands}/productlines', ProductLineController::class);
-        });
+    $api->group(['middleware' => ['role:upt-owner'], 'prefix' => 'upt'], function ($api) {
+        $api->resource('parentlands', ParentLandController::class);
+        // $api->group(['middleware' => 'isStoreOwner'], function ($api) {
+        //     $api->resource('stores', StoreController::class);
+        //     // $api->resource('stores/{store}/brands', BrandController::class);
+        //     // $api->resource('stores/{store}/brands/{brands}/productlines', ProductLineController::class);
+        // });
     });
 });

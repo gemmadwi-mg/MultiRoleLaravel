@@ -3,8 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use App\Models\UserProfile;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class UserSeeder extends Seeder
 {
@@ -15,30 +15,39 @@ class UserSeeder extends Seeder
      */
     public function run()
     {
-        User::factory()->count(1)
-            ->has(UserProfile::factory(1))
-            ->create()
-            ->each(
-                function ($user) {
-                    $user->assignRole('super-admin');
-                }
-            );
-        User::factory()->count(2)
-            ->has(UserProfile::factory(1))
-            ->create()
-            ->each(
-                function ($user) {
-                    $user->assignRole('system-admin');
-                }
-            );
-        
-        User::factory()->count(10)
-            ->has(UserProfile::factory(1))
-            ->create()
-            ->each(
-                function ($user) {
-                    $user->assignRole('customer');
-                }
-            );
+        $admin = User::create([
+            'name' => 'PU SDA Admin',
+            'email' => 'admin@gmail.com',
+            'email_verified_at' => now(),
+            'password' => 'admin@1234',
+            'remember_token' => Str::random(10),
+        ]);
+        $admin->assignRole('super-admin');
+
+        $upt_kediri = User::create([
+            'name' => 'UPT PSDA Kediri',
+            'email' => 'userkediri@gmail.com',
+            'email_verified_at' => now(),
+            'password' => 'userkediri@1234',
+            'remember_token' => Str::random(10),
+        ]);
+        $upt_kediri->assignRole('upt-owner');
+
+        $upt_kediri = User::create([
+            'name' => 'UPT PSDA Lumajang',
+            'email' => 'userlumajang@gmail.com',
+            'email_verified_at' => now(),
+            'password' => 'userlumajang@1234',
+            'remember_token' => Str::random(10),
+        ]);
+        $upt_kediri->assignRole('upt-owner');
+
+        // User::factory()->count(6)
+        //     ->create()
+        //     ->each(
+        //         function ($user) {
+        //             $user->assignRole('upt_owner');
+        //         }
+        //     );
     }
 }

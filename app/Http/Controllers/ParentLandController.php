@@ -2,15 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ParentLand;
 use App\Models\Store;
-use App\Http\Requests\StoreStoreRequest;
-use App\Http\Requests\UpdateStoreRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class StoreController extends Controller
+class ParentLandController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -23,7 +22,7 @@ class StoreController extends Controller
             throw new NotFoundHttpException('User not found');
         }
 
-        $stores = Store::with('owner', 'users')->where('owner_id', $user->id)->get();
+        $stores = ParentLand::where('owner_id', $user->id)->get();
 
         return $stores;
     }
@@ -36,22 +35,14 @@ class StoreController extends Controller
      */
     public function store(Request $request)
     {
-        $rules = [
-            'name' => [
-                'required',
-                'string',
-                'min:3',
-                'max:30',
-                'unique:stores,name'
-            ],
-            'details' => [
-                'required',
-                'string',
-                'max:255'
-            ]
-        ];
-
-        $validator = Validator::make($request->all(), $rules);
+        $validator = Validator::make($request->all(), [
+            'certificate_number' => 'required|integer',
+            'certificate_date' => 'required',
+            'item_name' => 'required',
+            'address' => 'required',
+            'large' => 'required',
+            'asset_value' => 'required'
+        ]);
 
         if ($validator->fails()) {
             return response()->json([
@@ -63,14 +54,23 @@ class StoreController extends Controller
             throw new NotFoundHttpException('User not found');
         }
 
-        $store = $user->stores()->create([
-            'name' => $request->name,
-            'details' => $request->details,
-        ]);
+        try {
+            $parent_land = $user->parentLands()
+                ->create([
+                    'certificate_number' => $request->certificate_number,
+                    'certificate_date' => $request->certificate_date,
+                    'item_name' => $request->item_name,
+                    'address' => $request->address,
+                    'large' => $request->large,
+                    'asset_value' => $request->asset_value,
+                ]);
+        } catch (HttpException $th) {
+            throw $th;
+        }
 
         $response = [
-            'message' => 'Store created successfully',
-            'id' => $store->id
+            'message' => 'parent_land created successfully',
+            'id' => $parent_land->id
         ];
 
         return response()->json($response, 200);
