@@ -9,6 +9,8 @@ class ParentLand extends Model
 {
     use HasFactory;
 
+    protected $table = 'parent_lands';
+
     protected $fillable = [
         'owner_id',
         'certificate_number',
@@ -27,6 +29,10 @@ class ParentLand extends Model
     public function users()
     {
         return $this->belongsToMany(User::class, 'parent_land_admins');
+    }
+
+    public function childerland() { 
+        return $this->hasMany(ChilderLand::class);
     }
 
     // public function brands()

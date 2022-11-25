@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AdminParentLandController;
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\BrandController;
+use App\Http\Controllers\ChilderLandController;
 use App\Http\Controllers\ParentLandController;
 use App\Http\Controllers\ProductLineController;
 use App\Http\Controllers\StoreController;
@@ -64,6 +65,8 @@ $api->version('v1', function ($api) {
 
     $api->group(['middleware' => ['role:upt-owner'], 'prefix' => 'upt'], function ($api) {
         $api->resource('parentlands', ParentLandController::class);
+        // $api->get('childerland', 'App\Http\Controllers\ChilderLandController@index');
+        $api->resource('childerland', ChilderLandController::class);
         // $api->group(['middleware' => 'isStoreOwner'], function ($api) {
         //     $api->resource('stores', StoreController::class);
         //     // $api->resource('stores/{store}/brands', BrandController::class);

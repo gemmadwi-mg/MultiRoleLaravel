@@ -81,13 +81,15 @@ class AdminParentLandController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($ownerId, $id)
     {
-        if (!$user = User::find($id)) {
-            throw new NotFoundHttpException('User not found with id = ' . $id);
+        $brands = ParentLand::where('owner_id', $ownerId)->find($id);
+
+        if (empty($brands)) {
+            throw new NotFoundHttpException('ParentLand does not exist');
         }
 
-        return $user;
+        return $brands;
     }
 
     /**
